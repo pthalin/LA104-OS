@@ -155,11 +155,11 @@ uc8  SettingStr[][13] = {
 
 uc8 gItemMaxNum[MENU_NUM] = {
 //  ʵ
-    0, 5 - 2, 4, 1, 0, 1, 5,
+    0, 5 - 2, 4, 1, 0, 2, 5,
 };
 uc8 ItemNum[MENU_NUM] = {
 
-    2, 6 - 2, 5, 2, 5, 2, 6,
+    2, 6 - 2, 5, 2, 5, 3, 6,
 };
 
 u8 gItemIndexNum[MENU_NUM] = {
@@ -898,7 +898,7 @@ void ShowPopWindow(u16 x0, u16 y0, u16 Width, u16 Height, u16 WinCol, u16 BlkCol
         CharPtr = (u8 *)FileSysStr;
 
         strcpy((char *)TempStr, "");
-        memcpy(&Str[LEN * 0], TempStr, 4);
+        memcpy(&Str[LEN * 0], TempStr, 1);
 
         sprintf((char *)TempStr, "%3d", gItemParam[SAVEBMP]);
         strcat((char *)TempStr, " ");
@@ -923,7 +923,7 @@ void ShowPopWindow(u16 x0, u16 y0, u16 Width, u16 Height, u16 WinCol, u16 BlkCol
         Disp_Str6x8(x0 + 6 * 17 + 2, y0 + 4 + 14 * 0, CYN_, DAR, SYMB, BOLD, "ok");
         Disp_Str6x8(x0 + 6 * 17 + 2, y0 + 4 + 14 * 1, CYN_, DAR, SYMB, BOLD, "ok");
 
-        ShowPopStr(x0, y0, gItemMaxNum[Menu.index], gItemIndexNum[Menu.index], CharPtr, Str, 11, 5);
+        ShowPopStr(x0, y0, gItemMaxNum[Menu.index], gItemIndexNum[Menu.index], CharPtr, Str, 11, 4);
         break;
     case SETTING:
         CharPtr = (u8 *)SettingStr;

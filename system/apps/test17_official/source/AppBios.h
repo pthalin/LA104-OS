@@ -117,7 +117,7 @@ typedef struct
 #define FPGA_TRI        0x10
 
 //#define RECORD_DEPTH    3584   // gabo
-#define RECORD_DEPTH    500
+#define RECORD_DEPTH   1200
 #define CNTx4K          4 // gabo
 #define PSMP_NUM        2
 //----------------------USB DISK 

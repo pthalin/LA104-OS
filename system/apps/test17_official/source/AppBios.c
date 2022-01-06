@@ -11,14 +11,14 @@
 // stubs!
 u8  Save_Bmp(u16 FileNum){ return 0;}
 u8  Save_Buf(u16 FileNo){ return 0;}
-u8  Save_Csv(s16 FileNo){ return 0;}
+//u8  Save_Csv(s16 FileNo){ return 0;}
 u8  ReadParameter(void){ return 0;}
 u8  SaveParameter(void){ return 0;}
 u8  RestoreParameter(void){ return 0;}
 u16 Load_File_Num(u8 Tpye){ return 0;}
 
 void File_Num(void){}
-void PrintClk(u16 x0, u16 y0, u8 Phase){}
+//void PrintClk(u16 x0, u16 y0, u8 Phase){}
 void Clear_File_ICO(u16 x, u16 y){}
 void DispFileInfo(u8 Info){}
 
@@ -32,7 +32,7 @@ MENU_Struct Menu;
 ITEM_Struct Item;
 SUBITEM_Struct SubItem;
 
-u8   gSamplBuf[CNTx4K*4096];
+u8   gSamplBuf[CNTx4K*RECORD_DEPTH];
 u8   gLCD_Backup[LCD_BUF_WIDTH];
 u8   gLCD_Buf[LCD_BUF_WIDTH];
 

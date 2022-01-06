@@ -9,10 +9,112 @@
 #include <stdlib.h>
 #include "string.h"
 
+#include <library.h>
+#include "../../os_host/source/framework/BufferedIo.h"
+#include "../../os_host/source/framework/Serialize.h"
+
+uint8_t gFatSharedBuffer[BIOS::FAT::SharedBufferSize];
+
+void _HandleAssertion(const char* file, int line, const char* cond)
+{
+    BIOS::DBG::Print("XXXX Assertion failed in %s [%d]: %s\n", file, line, cond);
+    while (1);
+}
+
+
+void PrintClk(u16 x0, u16 y0, u8 Phase)
+{
+    u8  j, k;
+    u8  Str = 0;
+    u16 Sx, Sy;
+    Sx = x0 + 3;
+    Sy = y0;
+    Set_Posi(Sx, Sy);
+
+    for(j = 0; j < 12; j++)
+    {
+        Str = Run_ICO[Phase * 12 + j];
+
+        Set_Posi(Sx, Sy);
+        Set_Pixel(GRAY);
+        Set_Posi(Sx, Sy + 1);
+        for(k = 0; k < 8; k++)
+        {
+            if(Str & 0x01) Set_Pixel(RED);
+            else            Set_Pixel(GRAY);
+            Str >>= 1;
+        }
+        Sx++;
+    }
+}
+
+u8 Save_Csv(s16 FileNo)
+{
+    CBufferedWriter writer;
+    char strFilename[16];
+    u32 i;
+    u32 l = 0; 
+    u8 Num[12];
+    u8 count;
+    u8 CH_Status = 0;
+    u32 TransTime = 0;
+    u8 ch;
+
+    BIOS::FAT::SetSharedBuffer(gFatSharedBuffer);
+    sprintf(strFilename, "DATA%03d.csv", FileNo);
+	if (!writer.Open(strFilename))
+		return 1;
+
+    writer << "Time(nS), CH1, CH2, CH3, CH4,\r\n";
+    
+
+    for(i = TRI_START_NUM; i < RECORD_DEPTH - 3; i++)
+    {
+        CH_Status = TransStatusData(i);
+        if (i > TRI_START_NUM)
+        {
+            TransTime += TransformTime(i);
+        }
+        memset(Num, 0, 12);
+        u32ToDecStr(Num, TransTime);
+        for(count = 0; count < 12; count++)
+        {
+            if(Num[count] == 0) break;
+            writer << (u8) Num[count];
+        }
+        PrintClk(SAVE_ICO_X0, SAVE_ICO_Y0, (l++ >> 1) & 3);
+        writer << (u8) 0x2c;
+
+        for(ch = 0; ch < 4; ch++)
+        {        
+            memset(Num, 0, 12);                            
+            Char2Hex(Num, (CH_Status >> ch) & 0x01);
+            for(count = 0; count < 3; count++)
+            {
+                if(Num[count] == 0) break;
+                writer <<  (u8) Num[count];
+            }
+            PrintClk(SAVE_ICO_X0, SAVE_ICO_Y0, (l++ >> 1) & 3); 
+            writer << (u8) 0x2c;
+        }
+ 
+        writer << (u8) 0x0d;                                       
+        writer << (u8) 0x0a;
+        PrintClk(SAVE_ICO_X0, SAVE_ICO_Y0, (l++ >> 1) & 3);        
+    }    
+
+    if(gItemParam[SAVECSV] < 99) gItemParam[SAVECSV]++;
+
+    writer.Close();
+    BIOS::FAT::SetSharedBuffer(nullptr);
+    
+    return 0;
+}
+
+#if 0
 #define ParamAddress    0x08007800
-
-
 /*
+
 uc8  BmpHead[54] = {                               
     0X42, 0X4D, 0X76, 0X96, 0X00, 0X00, 0X00, 0X00,
     0X00, 0X00, 0X76, 0X00, 0X00, 0X00, 0X28, 0X00,
@@ -510,11 +612,11 @@ void Clear_File_ICO(u16 x, u16 y)
 void DispFileInfo(u8 Info)
 {
     u8 FnNote[][5] = {
-        "O K",          /*"
-        "Err",          /*"
-        "Err",          /*"
-        "Err",          /*"
-        "Err",          /*"
+        "O K",
+        "Err",
+        "Err",
+        "Err",
+        "Err",
     };
     
     Set_Color(GRAY, RED);
@@ -623,3 +725,4 @@ u8 RestoreParameter(void)
     return  0; //ok
 }
 /*********************************  END OF FILE  ******************************/
+ #endif
